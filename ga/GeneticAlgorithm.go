@@ -75,5 +75,12 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 	if genA.RandomEngine == nil {
 		return errors.New("random generator is not initialised")
 	}
+
+	// Init
+	genA.Candidates = make(Population, 0)
+	genA.Candidates = genA.FillRandomPopulation(populationSize, bitstringLength, cities)
+	genA.BestCandidate = genA.Candidates[0].Copy()
+	genA.UpdateBestCandidate(genA.MaxFitnessCandidate(genA.Candidates, cities), cities)
+
 	return nil
 }

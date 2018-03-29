@@ -90,6 +90,21 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
 		genA.Output("Iteration", y)
 		genA.Summarise("Start Population      :", genA.Candidates, cities)
+
+		// Selection
+		breedingGround := make(Population, 0)
+		breedingGround = append(breedingGround, genA.Selection(genA.Candidates, cities)...)
+		bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
+		genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
+		genA.Summarise("Selection Offspring  :", breedingGround, cities)
+
+		genA.Generations++
+		genA.IterationsSinceChange++
+		genA.Candidates = make(Population, populationSize)
+		copy(genA.Candidates, breedingGround)
+		genA.Summarise("Final Population      :", breedingGround, cities)
+		genA.Output()
+		genA.Output()
 	}
 
 	genA.Output("Best Candidate Found:", genA.BestCandidate.Sequence, "Fitness:", genA.Fitness(genA.BestCandidate, cities))

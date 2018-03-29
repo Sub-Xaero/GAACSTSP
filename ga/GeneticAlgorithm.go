@@ -1,6 +1,7 @@
 package ga
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -67,3 +68,12 @@ func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, 
 	genA.Output(output)
 }
 
+func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstringLength, generations int, mutate, terminateEarly bool) error {
+	if genA.Output == nil {
+		return errors.New("output func is nil")
+	}
+	if genA.RandomEngine == nil {
+		return errors.New("random generator is not initialised")
+	}
+	return nil
+}

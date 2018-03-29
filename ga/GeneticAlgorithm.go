@@ -82,10 +82,15 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 	genA.BestCandidate = genA.Candidates[0].Copy()
 	genA.UpdateBestCandidate(genA.MaxFitnessCandidate(genA.Candidates, cities), cities)
 
+	// Run breeding cycles
+	for y := 1; y <= generations; y++ {
 		var bestCandidateOfGeneration Genome
 
 		bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
 		genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
+		genA.Output("Iteration", y)
+		genA.Summarise("Start Population      :", genA.Candidates, cities)
+	}
 
 	genA.Output("Best Candidate Found:", genA.BestCandidate.Sequence, "Fitness:", genA.Fitness(genA.BestCandidate, cities))
 	return nil

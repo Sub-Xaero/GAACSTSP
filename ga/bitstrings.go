@@ -9,20 +9,21 @@ type Bitstring []string
 
 // GenerateCandidate returns an encoded string as set by calls SetGenerateBitString. Defaults to binary strings
 func (genA *GeneticAlgorithm) GenerateCandidate(length int, cities map[string]City) (Bitstring, error) {
-	if length < len(cities) {
+	reqLength := len(cities) + 1
+	if length < reqLength {
 		return nil, errors.New("string is not long enough to encode tour")
 	}
-	if length > len(cities) {
+	if length > reqLength {
 		return nil, errors.New("string is longer than a full tour")
 	}
-	keys := make([]string, 0)
 
+	keys := make([]string, 0)
 	for key := range cities {
 		keys = append(keys, key)
 	}
 
 	sequence := make(Bitstring, 0)
-	for i := 0; i < length; i++ {
+	for i := 0; i < length - 1; i++ {
 		choice := genA.RandomEngine.Int() % len(keys)
 		sequence = append(sequence, keys[choice])
 		keys = append(keys[:choice], keys[choice+1:]...)

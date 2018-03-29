@@ -12,7 +12,7 @@ func main() {
 	var (
 		populationSize = 200
 		generations    = 2000
-		strLength      = len(cities)
+		strLength      = len(cities) + 1
 	)
 
 	ga.Run(cities, populationSize, strLength, generations, true, true)

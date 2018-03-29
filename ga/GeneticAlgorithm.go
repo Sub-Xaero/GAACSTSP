@@ -115,6 +115,11 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		genA.Summarise("Final Population      :", breedingGround, cities)
 		genA.Output()
 		genA.Output()
+
+		if terminateEarly && float32(genA.IterationsSinceChange) > float32(generations)*0.25 {
+			genA.Output("Termination : Stagnating change")
+			break
+		}
 	}
 
 	genA.Output("Best Candidate Found:", genA.BestCandidate.Sequence, "Fitness:", genA.Fitness(genA.BestCandidate, cities))

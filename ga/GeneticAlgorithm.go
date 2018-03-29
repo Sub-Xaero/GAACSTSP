@@ -1,7 +1,9 @@
 package ga
 
 import (
+	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -43,5 +45,25 @@ func (genA *GeneticAlgorithm) FillRandomPopulation(populationSize, candidateLeng
 		candidatePool = append(candidatePool, Genome{bitstring})
 	}
 	return candidatePool
+}
+
+func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, cities map[string]City) {
+	output := ""
+	output += title
+	output += "{"
+	for _, val := range candidatePool {
+		output += "["
+		if len(val.Sequence) <= 10 {
+			output += val.Sequence.String()
+		} else {
+			output += fmt.Sprintf("%3v", genA.Fitness(val, cities))
+		}
+		output += "]"
+	}
+	output += "}"
+	output += " Max : " + strconv.FormatFloat(genA.MaxFitness(candidatePool, cities), 'f', 2, 64)
+	output += " Average : " + strconv.FormatFloat(genA.AverageFitness(candidatePool, cities), 'f', 2, 64)
+	output += " Best : " + genA.MaxFitnessCandidate(candidatePool, cities).String()
+	genA.Output(output)
 }
 

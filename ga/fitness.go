@@ -24,3 +24,12 @@ func (genA *GeneticAlgorithm) Fitness(gene Genome, cities map[string]City) float
 	}
 	return 0.0 - totalDistance
 }
+
+// AverageFitness returns the average fitness of a [] Genome candidatePool
+func (genA *GeneticAlgorithm) AverageFitness(candidatePool Population, cities map[string]City) float64 {
+	var average = 0.0
+	for _, i := range candidatePool {
+		average += genA.Fitness(i, cities)
+	}
+	return average / float64(len(candidatePool))
+}

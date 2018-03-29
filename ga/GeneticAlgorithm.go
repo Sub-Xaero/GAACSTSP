@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"time"
 )
+
 type GeneticAlgorithm struct {
 	Candidates    Population
 	BestCandidate Genome
@@ -25,6 +26,13 @@ func NewGeneticAlgorithm() GeneticAlgorithm {
 
 func (genA *GeneticAlgorithm) SetSeed(seed int64) {
 	genA.RandomEngine = rand.New(rand.NewSource(seed))
+}
+
+func (genA *GeneticAlgorithm) UpdateBestCandidate(bestOfGeneration Genome, cities map[string]City) {
+	if genA.Fitness(bestOfGeneration, cities) > genA.Fitness(genA.BestCandidate, cities) {
+		genA.BestCandidate = bestOfGeneration.Copy()
+		genA.IterationsSinceChange = 0
+	}
 }
 
 func (genA *GeneticAlgorithm) FillRandomPopulation(populationSize, candidateLength int, cities map[string]City) Population {

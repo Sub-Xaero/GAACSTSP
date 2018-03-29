@@ -22,3 +22,7 @@ func NewGeneticAlgorithm() GeneticAlgorithm {
 
 	return geneticAlgorithm
 }
+
+func (genA *GeneticAlgorithm) SetSeed(seed int64) {
+	genA.RandomEngine = rand.New(rand.NewSource(seed))
+}

@@ -26,3 +26,14 @@ func NewGeneticAlgorithm() GeneticAlgorithm {
 func (genA *GeneticAlgorithm) SetSeed(seed int64) {
 	genA.RandomEngine = rand.New(rand.NewSource(seed))
 }
+
+func (genA *GeneticAlgorithm) FillRandomPopulation(populationSize, candidateLength int, cities map[string]City) Population {
+	candidatePool := make(Population, 0)
+	for len(candidatePool) < populationSize {
+		bitstring, err := genA.GenerateCandidate(candidateLength, cities)
+		Check(err)
+		candidatePool = append(candidatePool, Genome{bitstring})
+	}
+	return candidatePool
+}
+

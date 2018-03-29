@@ -17,6 +17,25 @@ func (genA *GeneticAlgorithm) TournamentSelection(candidatePool Population, citi
 	return offspring
 }
 
+func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities map[string]City) Population {
+	offspring := make(Population, 0)
+	for range candidatePool {
+		weightSum := 0.0
+		for _, val := range candidatePool {
+			weightSum += genA.Fitness(val, cities)
+		}
+		choice := genA.RandomEngine.Float32() * float32(weightSum)
+		for _, val := range candidatePool {
+			choice -= float32(genA.Fitness(val, cities))
+			if choice <= 0 {
+				offspring = append(offspring, val.Copy())
+				break
+			}
+		}
+	}
+	return offspring
+}
+
 // SetSelectionFunc changes the selection function to the function specified
 func (genA *GeneticAlgorithm) Selection(candidatePool Population, cities map[string]City) Population {
 	return genA.TournamentSelection(candidatePool, cities)

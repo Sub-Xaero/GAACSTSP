@@ -98,6 +98,16 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
 		genA.Summarise("Selection Offspring  :", breedingGround, cities)
 
+		// Mutation
+		if mutate {
+			for index := range breedingGround {
+				breedingGround[index] = genA.Mutate(breedingGround[index])
+			}
+			bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
+			genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
+			genA.Summarise("Mutation Offspring    :", breedingGround, cities)
+		}
+
 		genA.Generations++
 		genA.IterationsSinceChange++
 		genA.Candidates = make(Population, populationSize)

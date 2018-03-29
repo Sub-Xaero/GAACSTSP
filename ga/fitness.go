@@ -33,3 +33,30 @@ func (genA *GeneticAlgorithm) AverageFitness(candidatePool Population, cities ma
 	}
 	return average / float64(len(candidatePool))
 }
+
+// MaxFitness returns the highest fitness found in a [] Genome candidatePool
+func (genA *GeneticAlgorithm) MaxFitnessCandidate(candidatePool Population, cities map[string]City) Genome {
+	var (
+		set     = false
+		max     = 0.0
+		maxGene Genome
+	)
+	for _, i := range candidatePool {
+		fitness := genA.Fitness(i, cities)
+		if !set {
+			set = true
+			max = fitness
+			maxGene = i.Copy()
+		}
+		if fitness > max {
+			max = fitness
+			maxGene = i.Copy()
+		}
+	}
+	return maxGene
+}
+
+// MaxFitness returns the highest fitness found in a [] Genome candidatePool
+func (genA *GeneticAlgorithm) MaxFitness(candidatePool Population, cities map[string]City) float64 {
+	return genA.Fitness(genA.MaxFitnessCandidate(candidatePool, cities), cities)
+}

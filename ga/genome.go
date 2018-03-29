@@ -4,3 +4,5 @@ package ga
 type Genome struct {
 	Sequence Bitstring
 }
+
+type Population [] Genome

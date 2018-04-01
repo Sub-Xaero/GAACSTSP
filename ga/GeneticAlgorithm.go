@@ -68,7 +68,7 @@ func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, 
 	genA.Output(output)
 }
 
-func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstringLength, generations int, mutate, terminateEarly bool) error {
+func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstringLength, generations int, crossover, mutate, terminateEarly bool) error {
 	if genA.Output == nil {
 		return errors.New("output func is nil")
 	}
@@ -97,6 +97,14 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
 		genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
 		genA.Summarise("Selection Offspring  :", breedingGround, cities)
+
+		// Crossover
+		if crossover {
+			breedingGround = genA.Crossover(breedingGround)
+			bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
+			genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
+			genA.Summarise("Crossover Offspring    :", breedingGround, cities)
+		}
 
 		// Mutation
 		if mutate {

@@ -12,6 +12,58 @@ type City struct {
 	x, y float64
 }
 
+func LoadTSPOptTour(filename string) Genome {
+	sequence := make(Bitstring, 0)
+
+	file, err := os.Open(filename)
+	Check(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+
+	// Regex-ers
+	fileType := regexp.MustCompile(`^\s*TYPE\s*:`)
+	tourSection := regexp.MustCompile(`^\s*TOUR_SECTION`)
+
+	// Read file header
+	for scanner.Scan() {
+		Check(scanner.Err())
+
+		line := scanner.Text()
+		Check(scanner.Err())
+
+		if fileType.MatchString(line) && !strings.Contains(line, "TOUR") {
+			panic("Input file being loaded as optimal tour file")
+		}
+
+		if tourSection.MatchString(line) {
+			break
+		}
+	}
+
+	// Read file content
+	re := regexp.MustCompile(`\s+`)
+	for scanner.Scan() {
+		Check(scanner.Err())
+
+		line := scanner.Text()
+		Check(scanner.Err())
+
+		line = re.ReplaceAllString(line, " ")
+		line = strings.Trim(line, " ")
+
+		if strings.Compare(line, "EOF") == 0 {
+			break
+		}
+		data := strings.Split(line, " ")
+		for _, val := range data {
+			_, convertErr := strconv.ParseInt(val, 10, 64)
+			Check(convertErr)
+			sequence = append(sequence, val)
+		}
+	}
+	return Genome{Sequence: sequence}
+}
+
 func LoadTSPLib(filename string) map[string]City {
 	cities := make(map[string]City, 0)
 	file, err := os.Open(filename)

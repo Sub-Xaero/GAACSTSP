@@ -24,10 +24,16 @@ func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities
 	for i := 0; i < len(candidatePool); i++ {
 		// Build weights
 		weightSum := 0.0
+		// Multi-thread to speed up
+		ch := make(chan float64, len(candidatePool))
 		for _, val := range candidatePool {
-			weightSum += genA.Fitness(val, cities)
+			go func() {
+				ch <- genA.Fitness(val, cities)
+			}()
 		}
-		choice := genA.RandomEngine.Float32() * float32(weightSum)
+		for range candidatePool {
+			weightSum += <-ch
+		}
 
 		choice := 0
 		chosenPoint := genA.RandomEngine.Float64() * weightSum
@@ -40,6 +46,7 @@ func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities
 				break
 			}
 		}
+
 		offspring = append(offspring, candidatePool[choice].Copy())
 	}
 	return offspring

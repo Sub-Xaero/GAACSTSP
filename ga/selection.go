@@ -17,36 +17,40 @@ func (genA *GeneticAlgorithm) TournamentSelection(candidatePool Population, citi
 	return offspring
 }
 
+func (genA *GeneticAlgorithm) RouletteChoice(candidatePool Population, cities map[string]City) int {
+	// Build weights
+	weightSum := 0.0
+	// Multi-thread to speed up
+	ch := make(chan float64, len(candidatePool))
+	for _, val := range candidatePool {
+		go func() {
+			ch <- genA.Fitness(val, cities)
+		}()
+	}
+	for range candidatePool {
+		weightSum += <-ch
+	}
+
+	choice := 0
+	chosenPoint := genA.RandomEngine.Float64() * weightSum
+
+	// Reduce weights to find position chosen
+	for index := range candidatePool {
+		chosenPoint -= genA.Fitness(candidatePool[index], cities)
+		if chosenPoint <= 0 {
+			choice = index
+			break
+		}
+	}
+	return choice
+}
+
 func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities map[string]City) Population {
 	offspring := make(Population, 0)
 
 	// For as many children as we want
 	for i := 0; i < len(candidatePool); i++ {
-		// Build weights
-		weightSum := 0.0
-		// Multi-thread to speed up
-		ch := make(chan float64, len(candidatePool))
-		for _, val := range candidatePool {
-			go func() {
-				ch <- genA.Fitness(val, cities)
-			}()
-		}
-		for range candidatePool {
-			weightSum += <-ch
-		}
-
-		choice := 0
-		chosenPoint := genA.RandomEngine.Float64() * weightSum
-
-		// Reduce weights to find position chosen
-		for index := range candidatePool {
-			chosenPoint -= genA.Fitness(candidatePool[index], cities)
-			if chosenPoint <= 0 {
-				choice = index
-				break
-			}
-		}
-
+		choice := genA.RouletteChoice(candidatePool, cities)
 		offspring = append(offspring, candidatePool[choice].Copy())
 	}
 	return offspring

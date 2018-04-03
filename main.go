@@ -16,8 +16,7 @@ func main() {
 		generations    = 500
 		strLength      = len(cities) + 1
 	)
-
 	ga.Run(cities, populationSize, strLength, generations, true, true, false)
-	fmt.Println("Optimal: ", ga.Fitness(optimal, cities))
-	fmt.Println("Best Found: ", ga.Fitness(ga.BestCandidate, cities))
+	fmt.Println("Optimal    : ", ga.Fitness(optimal, cities))
+	fmt.Println("Best Found : ", ga.Fitness(ga.BestCandidate, cities))
 }

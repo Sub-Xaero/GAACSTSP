@@ -19,19 +19,28 @@ func (genA *GeneticAlgorithm) TournamentSelection(candidatePool Population, citi
 
 func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities map[string]City) Population {
 	offspring := make(Population, 0)
-	for range candidatePool {
+
+	// For as many children as we want
+	for i := 0; i < len(candidatePool); i++ {
+		// Build weights
 		weightSum := 0.0
 		for _, val := range candidatePool {
 			weightSum += genA.Fitness(val, cities)
 		}
 		choice := genA.RandomEngine.Float32() * float32(weightSum)
-		for _, val := range candidatePool {
-			choice -= float32(genA.Fitness(val, cities))
-			if choice <= 0 {
-				offspring = append(offspring, val.Copy())
+
+		choice := 0
+		chosenPoint := genA.RandomEngine.Float64() * weightSum
+
+		// Reduce weights to find position chosen
+		for index := range candidatePool {
+			chosenPoint -= genA.Fitness(candidatePool[index], cities)
+			if chosenPoint <= 0 {
+				choice = index
 				break
 			}
 		}
+		offspring = append(offspring, candidatePool[choice].Copy())
 	}
 	return offspring
 }

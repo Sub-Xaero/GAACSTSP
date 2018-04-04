@@ -6,7 +6,7 @@ package ga
 func (genA *GeneticAlgorithm) Mutate(gene Genome) Genome {
 	geneCopy := gene.Copy()
 	newSequence := gene.Copy()
-	min := 1
+	min := 0
 	max := len(geneCopy.Sequence) - 1
 
 	// Choose 2 indexes

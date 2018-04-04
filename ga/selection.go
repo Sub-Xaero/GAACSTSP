@@ -61,13 +61,12 @@ func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities
 // of [ 0 1 ], only return elements whose N position such that elem = [ x x N x ... ], does not contain either 0 or 1
 func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Population, cities map[string]City) Population {
 	candidatePoolCopy := candidatePool.Copy()
+	poolSize := len(candidatePoolCopy)
 	filteredOffspring := make(Population, 0)
-
 	numAlreadyVisited := len(genePartial)
 
 	// Loop over candidate pool
-	for i := 0; i < len(candidatePoolCopy); i++ {
-
+	for i := 0; i < poolSize; i++ {
 		// Only filter on elements in positions > those already picked as visited
 		// Slice containing the next possible element to be picked
 		remainingSlice := candidatePoolCopy[i].Sequence[numAlreadyVisited : numAlreadyVisited+1]
@@ -107,7 +106,40 @@ func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Pop
 	return filteredOffspring
 }
 
+func (genA *GeneticAlgorithm) ACOSelection(candidatePool Population, cities map[string]City) Population {
+	numChildren := len(candidatePool)
+	offspring := make(Population, 0)
+	possibilities := candidatePool.Copy()
+
+	// Assumes all bitstrings same length
+	strLen := len(candidatePool[0].Sequence)
+
+	// Communication channel
+	ch := make(chan Bitstring, numChildren)
+
+	// For as many children as we want
+	for i := 0; i < numChildren; i++ {
+		// Launch concurrent goroutines, each one generate a child
+		go func() {
+			child := Bitstring{}
+			for x := 0; x < strLen; x++ {
+				filteredPossibilities := genA.ACOFilter(child, possibilities, cities)
+				choice := genA.RouletteChoice(filteredPossibilities, cities)
+				child = append(child, filteredPossibilities[choice].Sequence[x])
+			}
+			ch <- child
+		}()
+	}
+
+	// Receive children as they are created async
+	for i := 0; i < numChildren; i++ {
+		offspring = append(offspring, Genome{<-ch})
+	}
+
+	return offspring
+}
+
 // SetSelectionFunc changes the selection function to the function specified
 func (genA *GeneticAlgorithm) Selection(candidatePool Population, cities map[string]City) Population {
-	return genA.TournamentSelection(candidatePool, cities)
+	return genA.ACOSelection(candidatePool, cities)
 }

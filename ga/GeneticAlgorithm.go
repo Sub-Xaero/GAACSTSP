@@ -87,7 +87,7 @@ func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, 
 	output += " # Genes: " + strconv.Itoa(len(candidatePool))
 	output += ", Max: " + strconv.FormatFloat(math.Abs(genA.MaxFitness(candidatePool, cities)), 'f', 2, 64)
 	output += ", Avg: " + strconv.FormatFloat(math.Abs(genA.AverageFitness(candidatePool, cities)), 'f', 2, 64)
-	output += ", Best: " + genA.MaxFitnessCandidate(candidatePool, cities).String()
+	output += ", Best: " + strconv.FormatFloat(math.Abs(genA.Fitness(maxCandidate, cities)), 'f', 2, 64) + " " + maxCandidate.String()
 	genA.Output(output)
 }
 

@@ -7,6 +7,10 @@ type Genome struct {
 	Sequence Bitstring
 }
 
+func (gene Genome) CopySize() Genome {
+	sequence := make(Bitstring, len(gene.Sequence))
+	return Genome{sequence}
+}
 
 func (gene Genome) Copy() Genome {
 	sequence := gene.Sequence.CopySize()

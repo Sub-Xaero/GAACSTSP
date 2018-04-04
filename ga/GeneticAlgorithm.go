@@ -119,8 +119,7 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 
 		genA.Generations++
 		genA.IterationsSinceChange++
-		genA.Candidates = make(Population, populationSize)
-		copy(genA.Candidates, breedingGround)
+		genA.Candidates = breedingGround.Copy()
 		genA.Summarise("Final Population       :", breedingGround, cities)
 		genA.Output()
 		genA.Output()

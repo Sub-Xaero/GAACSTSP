@@ -60,8 +60,7 @@ func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities
 // contains only elements whose next chromosome to be picked is valid. e.g. with a a partial solution
 // of [ 0 1 ], only return elements whose N position such that elem = [ x x N x ... ], does not contain either 0 or 1
 func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Population, cities map[string]City) Population {
-	candidatePoolCopy := make(Population, len(candidatePool))
-	copy(candidatePoolCopy, candidatePool)
+	candidatePoolCopy := candidatePool.Copy()
 	filteredOffspring := make(Population, 0)
 
 	numAlreadyVisited := len(genePartial)

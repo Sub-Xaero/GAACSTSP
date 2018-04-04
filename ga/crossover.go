@@ -1,10 +1,9 @@
 package ga
 
 func PMX(gene Genome, bitstring Bitstring) Genome {
-	output := make(Bitstring, len(gene.Sequence))
+	output := gene.Sequence.CopySize()
 	positions := make(map[string]int)
-	swapNumbers := make(Bitstring, len(bitstring))
-	copy(swapNumbers, bitstring)
+	swapNumbers := bitstring.Copy()
 	geneCopy := gene.Copy()
 	for index, city := range geneCopy.Sequence {
 		positions[city] = index

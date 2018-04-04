@@ -12,7 +12,7 @@ func EuclideanDistance(c1, c2 City) float64 {
 }
 
 func (genA *GeneticAlgorithm) Fitness(gene Genome, cities map[string]City) float64 {
-	genomeSequence := gene.Copy().Sequence
+	genomeSequence := gene.Sequence.Copy()
 
 	totalDistance := 0.0
 	for i := 0; i < len(genomeSequence)-2; i++ {

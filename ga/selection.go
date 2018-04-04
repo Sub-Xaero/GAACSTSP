@@ -72,19 +72,33 @@ func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Pop
 		// Slice containing the next possible element to be picked
 		remainingSlice := candidatePoolCopy[i].Sequence[numAlreadyVisited : numAlreadyVisited+1]
 
+		// Channel, to synchronise concurrent goroutines over
+		ch := make(chan string, len(remainingSlice))
+		for _, remainingCity := range remainingSlice {
+			// Launch goroutine, speed up processing
+			go func(ch chan string, remainingCity string) {
+				for _, visitedCity := range genePartial {
+					// Permutation based problem, so remove elements that would duplicate tours of a city if picked
+					if visitedCity == remainingCity {
+						// This city is not allowed, send key string over channel
+						ch <- "nil"
+						return
+					}
+				}
+				// City is allowed, send anything over channel just to fill buffered spaces
+				ch <- remainingCity
+			}(ch, remainingCity)
+		}
+
 		// Flag, if set to false in the below detection loop, elem is to be filtered out
 		allowed := true
-
-	toOuterLoop:
-		for _, remainingCity := range remainingSlice {
-			for _, visitedCity := range genePartial {
-				// Permutation based problem, so remove elements that would duplicate tours of a city if picked
-				if visitedCity == remainingCity {
-					allowed = false
-					break toOuterLoop
-				}
+		for x := 0; x < len(remainingSlice); x++ {
+			elem := <-ch
+			if elem == "nil" {
+				allowed = false
 			}
 		}
+
 		if allowed {
 			filteredOffspring = append(filteredOffspring, candidatePoolCopy[i])
 		}

@@ -1,7 +1,7 @@
 package ga
 
-// Mapping function,
-func PMX(gene Genome, bitstring Bitstring) Genome {
+// Function to actually perform the mapping operation described in SinglePointPMX()
+func pmx(gene Genome, bitstring Bitstring) Genome {
 	// Copy, so as not to corrupt existing gene
 	geneCopy := gene.Copy()
 
@@ -43,24 +43,25 @@ func PMX(gene Genome, bitstring Bitstring) Genome {
 // Permutation based problems cannot have multiple occurrences of a tour, crossover would
 // break constraints of problem, Partially-Mapped Crossover (PMX) instead acts as a mutation operator of sorts.
 //
-// The crossover section instead of swapping with a breeding parents respective crossover section, acts as a directive
+// The crossover section, instead of swapping with a breeding parents respective crossover section, acts as a directive -
 // identifying indices to swap with within the current parent, as opposed to absorbing those elements in those
 // positions into the current parent.
 // i.e.
-// Parent1 [123456789]
-// Parent2 [987654321]
-// Crossover point = 3
-// Crossover Section of Parent1 = [123]
-// Crossover Section of Parent2 = [987]
+// 		Parent 1 - [123456789]
+// 		Parent 2 - [987654321]
+// 		Crossover point = 3
+// 		Crossover Section of Parent1 = [123]
+// 		Crossover Section of Parent2 = [987]
 //
-// Parent1 PMX Crossover -
-// [123456789]
-// Swap [123] with positions of [987] in parent 1,
-// Offspring = [987456321]
+// 		Parent1 PMX Crossover -
+// 			[123456789]
+// 			Swap [123] with positions of [987] in parent 1,
+// 			Offspring = [987456321]
 //
-// Parent2 PMX Crossover -
-// Swap [987] with positions of [123] in parent 2,
-// Offspring = [123654789]
+// 		Parent2 PMX Crossover -
+// 			[987654321]
+// 			Swap [987] with positions of [123] in parent 2,
+// 			Offspring = [123654789]
 func (genA *GeneticAlgorithm) SinglePointPMX(population Population) Population {
 	offspring := make(Population, 0)
 
@@ -70,19 +71,20 @@ func (genA *GeneticAlgorithm) SinglePointPMX(population Population) Population {
 		parent1, parent2 := population[i].Copy(), population[i+1].Copy()
 
 		// Start city
-		min, max := 0, len(parent1.Sequence)-1
+		min, max := 0		, len(parent1.Sequence)-1
 		var crossoverPoint = 0
 		if max < 10 {
 			crossoverPoint = genA.RandomEngine.Intn(max-min) + min
 		} else {
 			crossoverPoint = 10
 		}
-		offspring1, offspring2 := PMX(parent1, parent2.Sequence[:crossoverPoint]), PMX(parent2, parent1.Sequence[:crossoverPoint])
+		offspring1, offspring2 := pmx(parent1, parent2.Sequence[:crossoverPoint]), pmx(parent2, parent1.Sequence[:crossoverPoint])
 		offspring = append(offspring, offspring1, offspring2)
 	}
 	return offspring
 }
 
+// Calls the chosen Crossover operator
 func (genA *GeneticAlgorithm) Crossover(candidatePool Population) Population {
 	return genA.SinglePointPMX(candidatePool)
 }

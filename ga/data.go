@@ -8,10 +8,15 @@ import (
 	"regexp"
 )
 
+// Storage type for co-ordinates loaded from TSPLib files
 type City struct {
-	x, y float64
+	X, Y float64
 }
 
+// Function to parse and construct a candidate from an ".opt.tour" file in TSPLib format
+//
+// TSBLib can be found at:
+//http://www.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/
 func LoadTSPOptTour(filename string) Genome {
 	sequence := make(Bitstring, 0)
 
@@ -64,6 +69,13 @@ func LoadTSPOptTour(filename string) Genome {
 	return Genome{Sequence: sequence}
 }
 
+// Function to parse and construct a map of cities from a ".tsp" file in TSPLib format.
+//
+// TSBLib can be found at:
+//http://www.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/
+//
+// Key is a string due to the encoding of the chromosomes in the Bitstring as a string, each chromosome represents a visit
+// to the city located at that index in the map.
 func LoadTSPLib(filename string) map[string]City {
 	cities := make(map[string]City, 0)
 	file, err := os.Open(filename)

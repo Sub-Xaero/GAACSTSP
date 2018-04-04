@@ -1,5 +1,8 @@
 package ga
 
+// Mutate() picks two random indices along a bitstring, excluding the special "-1" element at the end, and swaps the
+// values contained in those positions.
+// Returns the resulting offspring Genome
 func (genA *GeneticAlgorithm) Mutate(gene Genome) Genome {
 	geneCopy := gene.Copy()
 	newSequence := gene.Copy()

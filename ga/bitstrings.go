@@ -5,9 +5,10 @@ import (
 	"errors"
 )
 
+// Defines the storage data type that chromosomes will be encoded as
 type Bitstring []string
 
-// GenerateCandidate returns an encoded string as set by calls SetGenerateBitString. Defaults to binary strings
+// GenerateCandidate returns an encoded string containing a permutation of the indices provided by the argument 'cities'
 func (genA *GeneticAlgorithm) GenerateCandidate(length int, cities map[string]City) (Bitstring, error) {
 	// +1 to account for return to first city
 	reqLength := len(cities) + 1
@@ -42,20 +43,20 @@ func (genA *GeneticAlgorithm) GenerateCandidate(length int, cities map[string]Ci
 	return sequence, nil
 }
 
-// Copy the size of the slice, not the contents
+// Copy only the size of the Bitstring, not the contents
 func (b Bitstring) CopySize() Bitstring {
 	sequence := make(Bitstring, len(b))
 	return sequence
 }
 
-// Copy the contents of a slice
+// Copy the contents of a Bitstring
 func (b Bitstring) Copy() Bitstring {
 	sequence := b.CopySize()
 	copy(sequence, b)
 	return sequence
 }
 
-// Override toString method to be able to output the contents of a bitstring in a readable format
+// Override of the standard String() method to be able to output the contents of a bitstring in a more custom and readable format
 func (b Bitstring) String() string {
 	output := ""
 	for _, val := range b {

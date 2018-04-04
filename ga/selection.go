@@ -1,5 +1,8 @@
 package ga
 
+// Given a pool of candidates, pick 2 parents at random, compare their fitness, and add the parent with the best fitness
+// to the pool of offspring. Repeat N times to fill the offspring pool, such that
+// 	N = len(candidatePool)
 func (genA *GeneticAlgorithm) TournamentSelection(candidatePool Population, cities map[string]City) Population {
 	offspring := make(Population, 0)
 
@@ -17,6 +20,17 @@ func (genA *GeneticAlgorithm) TournamentSelection(candidatePool Population, citi
 	return offspring
 }
 
+// Multi-Threaded.
+//
+// Given a pool of candidates, sum the fitness of the candidates.
+// Multiply the sum fitness by a random float, to pick a random point in the pool. Then iteratively
+// reduce the sum by the fitness of each candidate in the pool in order, and the candidate that reduces the
+// sum below zero is the chosen candidate.
+//
+// Higher fitnesses reduce the sum by more, therefore are more likely to be picked, giving this selection method its
+// 'weighted', trait.
+//
+// Returns the index of the candidate in the pool that was selected
 func (genA *GeneticAlgorithm) RouletteChoice(candidatePool Population, cities map[string]City) int {
 	// Build weights
 	weightSum := 0.0
@@ -45,6 +59,10 @@ func (genA *GeneticAlgorithm) RouletteChoice(candidatePool Population, cities ma
 	return choice
 }
 
+// Wrapper around RouletteChoice(), given a pool of candidates, call RouletteChoice() N times
+// such that
+// 	N = len(candidatePool)
+// and return the new set of offspring.
 func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities map[string]City) Population {
 	offspring := make(Population, 0)
 
@@ -56,9 +74,15 @@ func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities
 	return offspring
 }
 
-// Permutation based problem, requires this function to filter down the candidate pool so that the returned population
-// contains only elements whose next chromosome to be picked is valid. e.g. with a a partial solution
-// of [ 0 1 ], only return elements whose N position such that elem = [ x x N x ... ], does not contain either 0 or 1
+// This function filters down the candidate pool so that the returned population
+// contains only elements whose next chromosome to be picked is valid.
+//
+// e.g. with a partial solution
+// of
+// 	[ 0 1 ]
+// the next position to be picked is 3, therefore only return elements whose N position such that
+// 	elem = [ x x N x ... ]
+// does not contain either 0 or 1
 func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Population, cities map[string]City) Population {
 	candidatePoolCopy := candidatePool.Copy()
 	poolSize := len(candidatePoolCopy)

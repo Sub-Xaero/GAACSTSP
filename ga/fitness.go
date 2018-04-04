@@ -4,13 +4,18 @@ import (
 	"math"
 )
 
+// Function to calculate the distance between two City structures
 func EuclideanDistance(c1, c2 City) float64 {
-	var difX = math.Pow(c1.x-c2.x, 2)
-	var difY = math.Pow(c1.y-c2.y, 2)
+	var difX = math.Pow(c1.X-c2.X, 2)
+	var difY = math.Pow(c1.Y-c2.Y, 2)
 	var sqSum = math.Sqrt(difX + difY)
 	return sqSum
 }
 
+// Determine the 'fitness' of a given candidate, fitness is the negative sum of the Euclidean distance of all cities
+// contained within the tour encoded by the gene's bitstring.
+//
+// Value is negative because this is a minimisation problem, the most 'fit' individual is that with the least distance
 func (genA *GeneticAlgorithm) Fitness(gene Genome, cities map[string]City) float64 {
 	genomeSequence := gene.Sequence.Copy()
 
@@ -34,7 +39,7 @@ func (genA *GeneticAlgorithm) AverageFitness(candidatePool Population, cities ma
 	return average / float64(len(candidatePool))
 }
 
-// MaxFitness returns the highest fitness found in a [] Genome candidatePool
+// MaxFitnessCandidate returns the highest fitness candidate found in a [] Genome candidatePool
 func (genA *GeneticAlgorithm) MaxFitnessCandidate(candidatePool Population, cities map[string]City) Genome {
 	var (
 		set     = false
@@ -56,7 +61,7 @@ func (genA *GeneticAlgorithm) MaxFitnessCandidate(candidatePool Population, citi
 	return maxGene
 }
 
-// MaxFitness returns the highest fitness found in a [] Genome candidatePool
+// Wrapper around MaxFitnessCandidate, returns the fitness value of the highest fitness candidate found in a [] Genome candidatePool
 func (genA *GeneticAlgorithm) MaxFitness(candidatePool Population, cities map[string]City) float64 {
 	return genA.Fitness(genA.MaxFitnessCandidate(candidatePool, cities), cities)
 }

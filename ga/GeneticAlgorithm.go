@@ -6,8 +6,17 @@ import (
 	"strconv"
 	"time"
 	"math"
+	"log"
 )
 
+// Main structure of program.
+// Compartmentalised such that multiple instances can theoretically be initialised and run simultaneously, though the results are undefined.
+//
+// This structure keeps track of the candidates to be overwritten and passed between generations,
+// the number of generations the algorithm was run for, the best candidate ever found, and the stagnation counter IterationsSinceChange.
+//
+// The structure also defines an Output closure, that can be used to change where the algorithm logs information to, as
+// well as RandomEngine, which can be independently configured to change how the algorithm generates "randomness"
 type GeneticAlgorithm struct {
 	Candidates    Population
 	BestCandidate Genome
@@ -19,6 +28,7 @@ type GeneticAlgorithm struct {
 	RandomEngine *rand.Rand
 }
 
+// Initialises and returns a GeneticAlgorithm structure with all the default configurations applied
 func NewGeneticAlgorithm() GeneticAlgorithm {
 	var geneticAlgorithm GeneticAlgorithm
 	geneticAlgorithm.SetOutputFunc(PrintToConsole)
@@ -27,10 +37,13 @@ func NewGeneticAlgorithm() GeneticAlgorithm {
 	return geneticAlgorithm
 }
 
+// Change the seed that the randomiser pulls random numbers out of.
 func (genA *GeneticAlgorithm) SetSeed(seed int64) {
 	genA.RandomEngine = rand.New(rand.NewSource(seed))
 }
 
+// Given the best genome found in a generation, if the new fitness is better - update the best candidate ever found stored in the GeneticAlgorithm
+// structure and reset the IterationsSinceChange counter, used in the detection of improvement stagnation.
 func (genA *GeneticAlgorithm) UpdateBestCandidate(bestOfGeneration Genome, cities map[string]City) {
 	if genA.Fitness(bestOfGeneration, cities) > genA.Fitness(genA.BestCandidate, cities) {
 		genA.BestCandidate = bestOfGeneration.Copy()
@@ -38,6 +51,8 @@ func (genA *GeneticAlgorithm) UpdateBestCandidate(bestOfGeneration Genome, citie
 	}
 }
 
+// Wrapper around GenerateCandidate(), creates a population of size "populationSize", where each candidate is of length
+// "candidateLength". Returns the resulting candidate pool.
 func (genA *GeneticAlgorithm) FillRandomPopulation(populationSize, candidateLength int, cities map[string]City) Population {
 	candidatePool := make(Population, 0)
 	for len(candidatePool) < populationSize {
@@ -48,6 +63,12 @@ func (genA *GeneticAlgorithm) FillRandomPopulation(populationSize, candidateLeng
 	return candidatePool
 }
 
+// Given a candidate pool or population, print out a summary of the contents:
+//
+// The text contained in "title",
+// Number of Genes in pool,
+// Average and Maximum fitness across the population,
+// and a visual representation of the best candidate of the generation.
 func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, cities map[string]City) {
 	output := ""
 	output += title
@@ -62,14 +83,19 @@ func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, 
 	//	output += "]"
 	//}
 	//output += "}"
+	maxCandidate := genA.MaxFitnessCandidate(candidatePool, cities)
 	output += " # Genes: " + strconv.Itoa(len(candidatePool))
-	output += ", Max: " + strconv.FormatFloat(math.Abs(genA.MaxFitness(candidatePool, cities)), 'f', 2, 64) 
+	output += ", Max: " + strconv.FormatFloat(math.Abs(genA.MaxFitness(candidatePool, cities)), 'f', 2, 64)
 	output += ", Avg: " + strconv.FormatFloat(math.Abs(genA.AverageFitness(candidatePool, cities)), 'f', 2, 64)
 	output += ", Best: " + genA.MaxFitnessCandidate(candidatePool, cities).String()
 	genA.Output(output)
 }
 
 func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstringLength, generations int, crossover, mutate, terminateEarly bool) error {
+// Run the algorithm, with the passed parameters. Performs the stages of
+// Selection, Crossover and Mutation, as determined by the boolean flag parameters crossover and mutate.
+// terminateEarly if set to true, will attempt to detect stagnation of improvement. If 25% of generations have passed
+// and no improvement has been made, algorithm will terminate early and return the best thus far.
 	if genA.Output == nil {
 		return errors.New("output func is nil")
 	}

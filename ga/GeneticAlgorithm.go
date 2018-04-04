@@ -2,10 +2,10 @@ package ga
 
 import (
 	"errors"
-	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
+	"math"
 )
 
 type GeneticAlgorithm struct {
@@ -63,7 +63,7 @@ func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, 
 	//}
 	//output += "}"
 	output += " # Genes: " + strconv.Itoa(len(candidatePool))
-	output += ", Max: " + strconv.FormatFloat(math.Abs(genA.MaxFitness(candidatePool, cities)), 'f', 2, 64)
+	output += ", Max: " + strconv.FormatFloat(math.Abs(genA.MaxFitness(candidatePool, cities)), 'f', 2, 64) 
 	output += ", Avg: " + strconv.FormatFloat(math.Abs(genA.AverageFitness(candidatePool, cities)), 'f', 2, 64)
 	output += ", Best: " + genA.MaxFitnessCandidate(candidatePool, cities).String()
 	genA.Output(output)

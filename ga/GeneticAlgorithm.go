@@ -91,11 +91,11 @@ func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, 
 	genA.Output(output)
 }
 
-func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstringLength, generations int, crossover, mutate, terminateEarly bool) error {
 // Run the algorithm, with the passed parameters. Performs the stages of
 // Selection, Crossover and Mutation, as determined by the boolean flag parameters crossover and mutate.
 // terminateEarly if set to true, will attempt to detect stagnation of improvement. If 25% of generations have passed
 // and no improvement has been made, algorithm will terminate early and return the best thus far.
+func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstringLength, generations int, crossover, mutate, terminateEarly bool, terminatePercentage float64, method string) error {
 	if genA.Output == nil {
 		return errors.New("output func is nil")
 	}
@@ -121,7 +121,16 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		breedingGround := make(Population, 0)
 
 		// Selection
-		breedingGround = genA.Selection(genA.Candidates, cities)
+		switch method {
+		case "ACO":
+			breedingGround = genA.ACOSelection(genA.Candidates, cities)
+		case "Roulette":
+			breedingGround = genA.RouletteSelection(genA.Candidates, cities)
+		case "Tournament":
+			breedingGround = genA.TournamentSelection(genA.Candidates, cities)
+		default:
+			log.Fatal("method not a recognised value")
+		}
 		bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
 		genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
 		genA.Summarise("Selection Offspring    :", breedingGround, cities)
@@ -151,7 +160,7 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		genA.Output()
 		genA.Output()
 
-		if terminateEarly && float32(genA.IterationsSinceChange) > float32(generations)*0.25 {
+		if terminateEarly && float64(genA.IterationsSinceChange) > float64(generations)*terminatePercentage {
 			genA.Output("Termination : Stagnating change")
 			break
 		}

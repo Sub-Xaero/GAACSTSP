@@ -23,7 +23,7 @@ func (genA *GeneticAlgorithm) GenerateCandidate(length int, cities map[string]Ci
 	}
 
 	sequence := make(Bitstring, 0)
-	for i := 0; i < length - 1; i++ {
+	for i := 0; i < length-1; i++ {
 		choice := genA.RandomEngine.Int() % len(keys)
 		sequence = append(sequence, keys[choice])
 		keys = append(keys[:choice], keys[choice+1:]...)
@@ -31,6 +31,18 @@ func (genA *GeneticAlgorithm) GenerateCandidate(length int, cities map[string]Ci
 
 	sequence = append(sequence, "-1")
 	return sequence, nil
+}
+
+
+func (b Bitstring) CopySize() Bitstring {
+	sequence := make(Bitstring, len(b))
+	return sequence
+}
+
+func (b Bitstring) Copy() Bitstring {
+	sequence := b.CopySize()
+	copy(sequence, b)
+	return sequence
 }
 
 // SetGenerateBitString sets the function that generates the Bitstring candidatePool

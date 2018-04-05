@@ -10,16 +10,18 @@ import (
 )
 
 func main() {
-	inputFileNamePtr := flag.String("input", "data/berlin52.tsp", "the path to a TSPLib input file \".tsp\" containing cities to find a solution for")
-	optimalRoutePtr := flag.String("optimal", "", "the path to a TSPLib optimal route file \".opt.tour\" containing an optimal solution to compare against")
-	methodPtr := flag.String("method", "ACO", "Selection method to use, one of 'ACO', 'Tournament', 'Roulette'")
-	numGenerationsPtr := flag.Int("generations", 500, "the number of generations to run for")
-	lengthPtr := flag.Int("length", 53, "the length of a candidate solution. Must be equal to the number of cities + 1")
-	sizePtr := flag.Int("size", 50, "the number of candidates to have in the pool")
-	crossoverPtr := flag.Bool("crossover", true, "whether or not the algorithm should use crossover operators")
-	mutatePtr := flag.Bool("mutate", true, "whether or not the algorithm should use mutation operators")
-	terminateEarlyPtr := flag.Bool("terminateEarly", false, "whether or not the algorithm should terminate early if stagnation is detected")
-	terminatePercentagePtr := flag.Int("terminatePercentage", 25, "percentage of the specified no. of generations (default 500), should the algorithm terminate if change has not been detected in that time")
+	var (
+		inputFileNamePtr       = flag.String("input", "data/berlin52.tsp", "the path to a TSPLib input file \".tsp\" containing cities to find a solution for")
+		optimalRoutePtr        = flag.String("optimal", "", "the path to a TSPLib optimal route file \".opt.tour\" containing an optimal solution to compare against")
+		methodPtr              = flag.String("method", "ACO", "Selection method to use, one of 'ACO', 'Tournament', 'Roulette'")
+		numGenerationsPtr      = flag.Int("generations", 500, "the number of generations to run for")
+		lengthPtr              = flag.Int("length", 53, "the length of a candidate solution. Must be equal to the number of cities + 1")
+		sizePtr                = flag.Int("size", 50, "the number of candidates to have in the pool")
+		crossoverPtr           = flag.Bool("crossover", true, "whether or not the algorithm should use crossover operators")
+		mutatePtr              = flag.Bool("mutate", true, "whether or not the algorithm should use mutation operators")
+		terminateEarlyPtr      = flag.Bool("terminateEarly", false, "whether or not the algorithm should terminate early if stagnation is detected")
+		terminatePercentagePtr = flag.Int("terminatePercentage", 25, "percentage of the specified no. of generations (default 500), should the algorithm terminate if change has not been detected in that time")
+	)
 
 	flag.Parse()
 

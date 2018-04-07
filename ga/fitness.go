@@ -33,8 +33,14 @@ func (genA *GeneticAlgorithm) Fitness(gene Genome, cities map[string]City) float
 // AverageFitness returns the average fitness of a [] Genome candidatePool
 func (genA *GeneticAlgorithm) AverageFitness(candidatePool Population, cities map[string]City) float64 {
 	var average = 0.0
+	ch := make(chan float64, len(candidatePool))
 	for _, i := range candidatePool {
-		average += genA.Fitness(i, cities)
+		go func() {
+			ch <- genA.Fitness(i, cities)
+		}()
+	}
+	for range candidatePool {
+		average += <-ch
 	}
 	return average / float64(len(candidatePool))
 }

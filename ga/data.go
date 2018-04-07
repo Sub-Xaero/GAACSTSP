@@ -37,7 +37,7 @@ func LoadTSPOptTour(filename string) Genome {
 		Check(scanner.Err())
 
 		if fileType.MatchString(line) && !strings.Contains(line, "TOUR") {
-			panic("Input file being loaded as optimal tour file")
+			panic("Invalid file being loaded as optimal tour file")
 		}
 
 		if tourSection.MatchString(line) {
@@ -98,7 +98,7 @@ func LoadTSPLib(filename string) map[string]City {
 		Check(scanner.Err())
 
 		if fileType.MatchString(line) && !strings.Contains(line, "TSP") {
-			panic("Optimal tour file being loaded as input file")
+			panic("Invalid file being loaded as input file")
 		}
 
 		if fixedEdgesSection.MatchString(line) {

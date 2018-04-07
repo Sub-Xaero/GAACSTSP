@@ -3,7 +3,7 @@ package ga
 import "fmt"
 
 // Default output function, prints whatever is provided to it to the standard TTY console.
-func PrintToConsole (a ...interface{}) {
+func PrintToConsole(a ...interface{}) {
 	fmt.Println(a...)
 }
 

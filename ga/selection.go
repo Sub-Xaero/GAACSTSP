@@ -85,11 +85,18 @@ func (genA *GeneticAlgorithm) RouletteChoice(candidatePool Population, cities ma
 // and return the new set of offspring.
 func (genA *GeneticAlgorithm) RouletteSelection(candidatePool Population, cities map[string]City) Population {
 	offspring := make(Population, 0)
+	poolSize := len(candidatePool)
 
+	ch := make(chan Genome, poolSize)
 	// For as many children as we want
-	for i := 0; i < len(candidatePool); i++ {
-		choice := genA.RouletteChoice(candidatePool, cities)
-		offspring = append(offspring, candidatePool[choice].Copy())
+	for i := 0; i < poolSize; i++ {
+		go func() {
+			choice := genA.RouletteChoice(candidatePool, cities)
+			ch <- candidatePool[choice].Copy()
+		}()
+	}
+	for i := 0; i < poolSize; i++ {
+		offspring = append(offspring, <-ch)
 	}
 	return offspring
 }

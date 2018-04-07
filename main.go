@@ -15,7 +15,6 @@ func main() {
 		optimalRoutePtr        = flag.String("optimal", "", "the path to a TSPLib optimal route file \".opt.tour\" containing an optimal solution to compare against")
 		methodPtr              = flag.String("method", "ACO", "Selection method to use, one of 'ACO', 'Tournament', 'Roulette'")
 		numGenerationsPtr      = flag.Int("generations", 500, "the number of generations to run for")
-		lengthPtr              = flag.Int("length", 53, "the length of a candidate solution. Must be equal to the number of cities + 1")
 		sizePtr                = flag.Int("size", 50, "the number of candidates to have in the pool")
 		crossoverPtr           = flag.Bool("crossover", true, "whether or not the algorithm should use crossover operators")
 		mutatePtr              = flag.Bool("mutate", true, "whether or not the algorithm should use mutation operators")
@@ -55,7 +54,7 @@ func main() {
 	var (
 		populationSize      = *sizePtr
 		generations         = *numGenerationsPtr
-		strLength           = *lengthPtr
+		strLength           = len(cities) + 1
 		crossover           = *crossoverPtr
 		mutate              = *mutatePtr
 		terminateEarly      = *terminateEarlyPtr

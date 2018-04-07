@@ -40,13 +40,13 @@ func main() {
 
 	var method string
 
-	switch *methodPtr {
-	case "ACO":
+	switch strings.ToLower(*methodPtr) {
+	case "aco":
 		fallthrough
-	case "Roulette":
+	case "roulette":
 		fallthrough
-	case "Tournament":
-		method = *methodPtr
+	case "tournament":
+		method = strings.ToLower(*methodPtr)
 
 	default:
 		log.Fatal("method flag specified but was not a recognised value. Please use -h for help")

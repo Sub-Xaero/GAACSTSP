@@ -122,11 +122,11 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 
 		// Selection
 		switch method {
-		case "ACO":
+		case "aco":
 			breedingGround = genA.ACOSelection(genA.Candidates, cities)
-		case "Roulette":
+		case "roulette":
 			breedingGround = genA.RouletteSelection(genA.Candidates, cities)
-		case "Tournament":
+		case "tournament":
 			breedingGround = genA.TournamentSelection(genA.Candidates, cities)
 		default:
 			log.Fatal("method not a recognised value")
@@ -166,6 +166,6 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		}
 	}
 
-	genA.Output("Best Candidate Found:", genA.BestCandidate.Sequence, "Fitness:", genA.Fitness(genA.BestCandidate, cities))
+	genA.Output("Best Candidate Found :", strconv.FormatFloat(math.Abs(genA.Fitness(genA.BestCandidate, cities)), 'f', 2, 64), genA.BestCandidate, )
 	return nil
 }

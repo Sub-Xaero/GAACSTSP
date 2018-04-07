@@ -7,6 +7,8 @@ import (
 	"os"
 	. "subxaero/GAACSTSP/ga"
 	"log"
+	"math"
+	"strconv"
 )
 
 func main() {
@@ -62,7 +64,17 @@ func main() {
 	)
 	ga.Run(cities, populationSize, strLength, generations, crossover, mutate, terminateEarly, terminatePercentage, method)
 	if len(optimal.Sequence) != 0 {
-		fmt.Println("Optimal    : ", ga.Fitness(optimal, cities))
+		fmt.Println("Optimal              :", strconv.FormatFloat(math.Abs(ga.Fitness(optimal, cities)), 'f', 2, 64))
 	}
-	fmt.Println("Best Found : ", ga.Fitness(ga.BestCandidate, cities))
+	fmt.Println("Best Found           :", strconv.FormatFloat(math.Abs(ga.Fitness(ga.BestCandidate, cities)), 'f', 2, 64))
+	fmt.Println()
+	fmt.Println("Configuration:")
+	fmt.Println("selection", method)
+	fmt.Println("populationSize", populationSize)
+	fmt.Println("generations", generations)
+	fmt.Println("strLength", strLength)
+	fmt.Println("crossover", crossover)
+	fmt.Println("mutate", mutate)
+	fmt.Println("terminateEarly", terminateEarly)
+	fmt.Println("terminatePercentage", terminatePercentage)
 }

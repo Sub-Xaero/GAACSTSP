@@ -60,7 +60,7 @@ func (b Bitstring) Copy() Bitstring {
 func (b Bitstring) String() string {
 	output := ""
 	for _, val := range b {
-		output += fmt.Sprintf("%v", val) + " "
+		output += fmt.Sprintf("%2v", val) + " "
 	}
 	return "[" + output + "]"
 }

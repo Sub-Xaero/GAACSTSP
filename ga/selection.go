@@ -45,13 +45,15 @@ func (genA *GeneticAlgorithm) TournamentSelection(candidatePool Population, citi
 //
 // Returns the index of the candidate in the pool that was selected
 func (genA *GeneticAlgorithm) RouletteChoice(candidatePool Population, cities map[string]City) int {
+	max := math.Abs(genA.MinFitness(candidatePool, cities)) + 1
 	// Build weights
 	weightSum := 0.0
 	// Multi-thread to speed up
 	ch := make(chan float64, len(candidatePool))
 	for _, val := range candidatePool {
 		go func() {
-			ch <- genA.Fitness(val, cities)
+			val := max - math.Abs(genA.Fitness(val, cities))
+			ch <- val
 		}()
 	}
 	for range candidatePool {
@@ -63,7 +65,8 @@ func (genA *GeneticAlgorithm) RouletteChoice(candidatePool Population, cities ma
 
 	// Reduce weights to find position chosen
 	for index := range candidatePool {
-		chosenPoint -= genA.Fitness(candidatePool[index], cities)
+		reduce := max - math.Abs(genA.Fitness(candidatePool[index], cities))
+		chosenPoint -= reduce
 		if chosenPoint <= 0 {
 			choice = index
 			break

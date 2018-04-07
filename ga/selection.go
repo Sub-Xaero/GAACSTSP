@@ -10,7 +10,20 @@ func (genA *GeneticAlgorithm) TournamentSelection(candidatePool Population, citi
 		parent1 := candidatePool[genA.RandomEngine.Intn(len(candidatePool))]
 		parent2 := candidatePool[genA.RandomEngine.Intn(len(candidatePool))]
 
-		if genA.Fitness(parent1, cities) > genA.Fitness(parent2, cities) {
+		// Important that value received is for the correct candidate, so single buffered channel for each
+		fitness1 := make(chan float64, 1)
+		fitness2 := make(chan float64, 1)
+
+		// Fetch fitness of both values concurrently, negligible for small bitstrings, but helpful for large ones
+		go func() {
+			fitness1 <- genA.Fitness(parent1, cities)
+		}()
+
+		go func() {
+			fitness2 <- genA.Fitness(parent2, cities)
+		}()
+
+		if <-fitness1 > <-fitness2 {
 			offspring = append(offspring, parent1)
 		} else {
 			offspring = append(offspring, parent2)

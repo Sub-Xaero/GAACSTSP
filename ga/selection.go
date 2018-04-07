@@ -109,7 +109,7 @@ func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Pop
 	for i := 0; i < poolSize; i++ {
 		// Only filter on elements in positions > those already picked as visited
 		// Slice containing the next possible element to be picked
-		remainingSlice := candidatePoolCopy[i].Sequence[numAlreadyVisited : numAlreadyVisited+1]
+		remainingSlice := candidatePoolCopy[i].Sequence[numAlreadyVisited:]
 
 		// Channel, to synchronise concurrent goroutines over
 		ch := make(chan string, len(remainingSlice))

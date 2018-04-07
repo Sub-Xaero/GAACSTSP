@@ -1,5 +1,9 @@
 package ga
 
+import (
+	"math"
+)
+
 // Given a pool of candidates, pick 2 parents at random, compare their fitness, and add the parent with the best fitness
 // to the pool of offspring. Repeat N times to fill the offspring pool, such that
 // 	N = len(candidatePool)

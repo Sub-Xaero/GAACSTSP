@@ -71,3 +71,30 @@ func (genA *GeneticAlgorithm) MaxFitnessCandidate(candidatePool Population, citi
 func (genA *GeneticAlgorithm) MaxFitness(candidatePool Population, cities map[string]City) float64 {
 	return genA.Fitness(genA.MaxFitnessCandidate(candidatePool, cities), cities)
 }
+
+// MaxFitnessCandidate returns the highest fitness candidate found in a [] Genome candidatePool
+func (genA *GeneticAlgorithm) MinFitnessCandidate(candidatePool Population, cities map[string]City) Genome {
+	var (
+		set     = false
+		min     = 0.0
+		minGene Genome
+	)
+	for _, i := range candidatePool {
+		fitness := genA.Fitness(i, cities)
+		if !set {
+			set = true
+			min = fitness
+			minGene = i.Copy()
+		}
+		if fitness < min {
+			min = fitness
+			minGene = i.Copy()
+		}
+	}
+	return minGene
+}
+
+// Wrapper around MaxFitnessCandidate, returns the fitness value of the highest fitness candidate found in a [] Genome candidatePool
+func (genA *GeneticAlgorithm) MinFitness(candidatePool Population, cities map[string]City) float64 {
+	return genA.Fitness(genA.MinFitnessCandidate(candidatePool, cities), cities)
+}

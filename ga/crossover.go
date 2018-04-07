@@ -71,13 +71,9 @@ func (genA *GeneticAlgorithm) SinglePointPMX(population Population) Population {
 		parent1, parent2 := population[i].Copy(), population[i+1].Copy()
 
 		// Start city
-		min, max := 0		, len(parent1.Sequence)-1
+		min, max := 0, len(parent1.Sequence)-1
 		var crossoverPoint = 0
-		if max < 10 {
-			crossoverPoint = genA.RandomEngine.Intn(max-min) + min
-		} else {
-			crossoverPoint = 10
-		}
+		crossoverPoint = genA.RandomEngine.Intn(max-min) + min
 		offspring1, offspring2 := pmx(parent1, parent2.Sequence[:crossoverPoint]), pmx(parent2, parent1.Sequence[:crossoverPoint])
 		offspring = append(offspring, offspring1, offspring2)
 	}

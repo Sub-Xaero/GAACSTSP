@@ -95,7 +95,7 @@ func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, 
 // Selection, Crossover and Mutation, as determined by the boolean flag parameters crossover and mutate.
 // terminateEarly if set to true, will attempt to detect stagnation of improvement. If 25% of generations have passed
 // and no improvement has been made, algorithm will terminate early and return the best thus far.
-func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstringLength, generations int, crossover, mutate, terminateEarly bool, terminatePercentage float64, method string) error {
+func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstringLength, generations int, crossover, mutate, terminateEarly bool, terminatePercentage float64, selectionMethod, crossoverMethod string) error {
 	if genA.Output == nil {
 		return errors.New("output func is nil")
 	}
@@ -121,7 +121,7 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		breedingGround := make(Population, 0)
 
 		// Selection
-		switch method {
+		switch selectionMethod {
 		case "aco":
 			breedingGround = genA.ACOSelection(genA.Candidates, cities)
 		case "roulette":
@@ -129,7 +129,7 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		case "tournament":
 			breedingGround = genA.TournamentSelection(genA.Candidates, cities)
 		default:
-			log.Fatal("method not a recognised value")
+			log.Fatal("selectionMethod not a recognised value")
 		}
 		bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
 		genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
@@ -137,7 +137,15 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 
 		// Crossover
 		if crossover {
+			switch crossoverMethod {
+			case "ox":
+				breedingGround = genA.OrderedCrossover(genA.Candidates)
+			case "pmx":
 				breedingGround = genA.PartiallyMappedCrossover(genA.Candidates)
+			default:
+				log.Fatal("crossoverMethod not a recognised value")
+			}
+			breedingGround = genA.OrderedCrossover(breedingGround)
 			bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
 			genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
 			genA.Summarise("Crossover Offspring    :", breedingGround, cities)

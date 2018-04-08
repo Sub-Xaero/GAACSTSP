@@ -15,15 +15,15 @@ func main() {
 	var (
 		inputFileNamePtr       = flag.String("input", "data/berlin52.tsp", "the path to a TSPLib input file \".tsp\" containing cities to find a solution for")
 		optimalRoutePtr        = flag.String("optimal", "", "the path to a TSPLib optimal route file \".opt.tour\" containing an optimal solution to compare against")
-		methodPtr              = flag.String("method", "ACO", "Selection method to use, one of 'ACO', 'Tournament', 'Roulette'")
+		selectionMethodPtr     = flag.String("selectionMethod", "aco", "(default: aco) selection method to use, one of 'aco', 'tournament', 'roulette'")
+		crossoverMethodPtr     = flag.String("xoMethod", "ox", "(default: ox) crossover method to use, one of 'ox' (ordered), 'pmx' (partially-mapped)")
 		numGenerationsPtr      = flag.Int("generations", 500, "the number of generations to run for")
 		sizePtr                = flag.Int("size", 50, "the number of candidates to have in the pool")
-		crossoverPtr           = flag.Bool("crossover", true, "whether or not the algorithm should use crossover operators")
-		mutatePtr              = flag.Bool("mutate", true, "whether or not the algorithm should use mutation operators")
-		terminateEarlyPtr      = flag.Bool("terminateEarly", false, "whether or not the algorithm should terminate early if stagnation is detected")
+		crossoverPtr           = flag.Bool("crossover", true, "(default: false) whether or not the algorithm should use crossover operators")
+		mutatePtr              = flag.Bool("mutate", true, "(default: false) whether or not the algorithm should use mutation operators")
+		terminateEarlyPtr      = flag.Bool("terminateEarly", false, "(default: false) whether or not the algorithm should terminate early if stagnation is detected")
 		terminatePercentagePtr = flag.Int("terminatePercentage", 25, "percentage of the specified no. of generations (default 500), should the algorithm terminate if change has not been detected in that time")
 	)
-
 	flag.Parse()
 
 	cities := LoadTSPLib(*inputFileNamePtr)
@@ -39,18 +39,28 @@ func main() {
 		}
 	}
 
-	var method string
-
-	switch strings.ToLower(*methodPtr) {
+	var selectionMethod string
+	switch strings.ToLower(*selectionMethodPtr) {
 	case "aco":
 		fallthrough
 	case "roulette":
 		fallthrough
 	case "tournament":
-		method = strings.ToLower(*methodPtr)
+		selectionMethod = strings.ToLower(*selectionMethodPtr)
 
 	default:
 		log.Fatal("method flag specified but was not a recognised value. Please use -h for help")
+	}
+
+	var crossoverMethod string
+	switch strings.ToLower(*crossoverMethodPtr) {
+	case "ox":
+		fallthrough
+	case "pmx":
+		crossoverMethod = strings.ToLower(*crossoverMethodPtr)
+
+	default:
+		log.Fatal("xomethod flag specified but was not a recognised value. Please use -h for help")
 	}
 
 	var (
@@ -62,19 +72,19 @@ func main() {
 		terminateEarly      = *terminateEarlyPtr
 		terminatePercentage = float64(*terminatePercentagePtr) / 100.0
 	)
-	ga.Run(cities, populationSize, strLength, generations, crossover, mutate, terminateEarly, terminatePercentage, method)
+	ga.Run(cities, populationSize, strLength, generations, crossover, mutate, terminateEarly, terminatePercentage, selectionMethod, crossoverMethod)
 	if len(optimal.Sequence) != 0 {
 		fmt.Println("Optimal              :", strconv.FormatFloat(math.Abs(ga.Fitness(optimal, cities)), 'f', 2, 64))
 	}
 	fmt.Println("Best Found           :", strconv.FormatFloat(math.Abs(ga.Fitness(ga.BestCandidate, cities)), 'f', 2, 64))
 	fmt.Println()
 	fmt.Println("Configuration:")
-	fmt.Println("selection", method)
 	fmt.Println("populationSize", populationSize)
 	fmt.Println("generations", generations)
 	fmt.Println("strLength", strLength)
-	fmt.Println("crossover", crossover)
-	fmt.Println("mutate", mutate)
+	fmt.Println("selection", selectionMethod)
+	fmt.Println("crossover", crossover, crossoverMethod)
+	fmt.Println("mutate", mutate, "inversion")
 	fmt.Println("terminateEarly", terminateEarly)
 	fmt.Println("terminatePercentage", terminatePercentage)
 }

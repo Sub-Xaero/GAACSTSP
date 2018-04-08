@@ -189,8 +189,3 @@ func (genA *GeneticAlgorithm) ACOSelection(candidatePool Population, cities map[
 
 	return offspring
 }
-
-// SetSelectionFunc changes the selection function to the function specified
-func (genA *GeneticAlgorithm) Selection(candidatePool Population, cities map[string]City) Population {
-	return genA.ACOSelection(candidatePool, cities)
-}

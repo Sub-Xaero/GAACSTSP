@@ -116,6 +116,9 @@ func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Pop
 	filteredOffspring := make(Population, 0)
 	numAlreadyVisited := len(genePartial)
 
+	if numAlreadyVisited == 0 {
+		return candidatePoolCopy
+	}
 	// Loop over candidate pool
 	for i := 0; i < poolSize; i++ {
 		// Only filter on elements in positions > those already picked as visited

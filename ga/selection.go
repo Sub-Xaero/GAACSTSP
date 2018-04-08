@@ -160,6 +160,37 @@ func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Pop
 	return filteredOffspring
 }
 
+func (genA *GeneticAlgorithm) ACOPolyfill(genePartial Bitstring, cities map[string]City) Bitstring {
+	output := genePartial.Copy()
+	numCities := len(cities)
+	lenPartial := len(output)
+	if lenPartial > numCities {
+		panic("Trying to polyfill string past tour length")
+	} else if lenPartial == numCities {
+		output = append(output, "-1")
+	} else {
+		count := make(map[string]int)
+		for i := 1; i <= numCities; i++ {
+			count[strconv.Itoa(i)] = 0
+		}
+
+		for _, val := range output {
+			count[val]++
+		}
+
+		for key, val := range count {
+			if val > 1 {
+				panic("Duplicate key, should not exist")
+			}
+			if val == 0 {
+				output = append(output, key)
+				break
+			}
+		}
+	}
+	return output
+}
+
 func (genA *GeneticAlgorithm) ACOSelection(candidatePool Population, cities map[string]City) Population {
 	numChildren := len(candidatePool)
 	offspring := make(Population, 0)

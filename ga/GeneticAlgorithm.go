@@ -146,7 +146,7 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		// Mutation
 		if mutate {
 			for index := range breedingGround {
-				breedingGround[index] = genA.Mutate(breedingGround[index])
+				breedingGround[index] = genA.InversionMutate(breedingGround[index])
 			}
 			bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
 			genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)

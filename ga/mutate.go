@@ -43,9 +43,3 @@ func (genA *GeneticAlgorithm) InversionMutate(gene Genome) Genome {
 	}
 	return newSequence.Copy()
 }
-
-// Wrapper around default mutate method
-func (genA *GeneticAlgorithm) Mutate(gene Genome) Genome {
-	return genA.InversionMutate(gene)
-	//return genA.SwapMutate(gene)
-}

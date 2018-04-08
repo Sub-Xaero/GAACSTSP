@@ -2,6 +2,7 @@ package ga
 
 import (
 	"math"
+	"strconv"
 )
 
 // Given a pool of candidates, pick 2 parents at random, compare their fitness, and add the parent with the best fitness
@@ -119,41 +120,35 @@ func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Pop
 	if numAlreadyVisited == 0 {
 		return candidatePoolCopy
 	}
+
+	type result struct {
+		index   int
+		allowed bool
+	}
+	ch := make(chan result, poolSize)
+
 	// Loop over candidate pool
 	for i := 0; i < poolSize; i++ {
-		// Only filter on elements in positions > those already picked as visited
-		// Slice containing the next possible element to be picked
-		remainingSlice := candidatePoolCopy[i].Sequence[numAlreadyVisited:]
-
-		// Channel, to synchronise concurrent goroutines over
-		ch := make(chan string, len(remainingSlice))
-		for _, remainingCity := range remainingSlice {
-			// Launch goroutine, speed up processing
-			go func(ch chan string, remainingCity string) {
-				for _, visitedCity := range genePartial {
-					// Permutation based problem, so remove elements that would duplicate tours of a city if picked
-					if visitedCity == remainingCity {
-						// This city is not allowed, send key string over channel
-						ch <- "nil"
-						return
-					}
+		go func(index int) {
+			// Only filter on elements in positions > those already picked as visited
+			// Slice containing the next possible element to be picked
+			nextGene := candidatePoolCopy[index].Sequence[numAlreadyVisited]
+			for _, visitedCity := range genePartial {
+				// Permutation based problem, so remove elements that would duplicate tours of a city if picked
+				if visitedCity == nextGene {
+					// This city is not allowed, send key string over channel
+					ch <- result{index, false}
+					return
 				}
-				// City is allowed, send anything over channel just to fill buffered spaces
-				ch <- remainingCity
-			}(ch, remainingCity)
-		}
-
-		// Flag, if set to false in the below detection loop, elem is to be filtered out
-		allowed := true
-		for x := 0; x < len(remainingSlice); x++ {
-			elem := <-ch
-			if elem == "nil" {
-				allowed = false
 			}
-		}
+			ch <- result{index, true}
+		}(i)
+	}
 
-		if allowed {
-			filteredOffspring = append(filteredOffspring, candidatePoolCopy[i])
+	for x := 0; x < poolSize; x++ {
+		result := <-ch
+		if result.allowed {
+			filteredOffspring = append(filteredOffspring, candidatePoolCopy[result.index])
 		}
 	}
 
@@ -209,8 +204,12 @@ func (genA *GeneticAlgorithm) ACOSelection(candidatePool Population, cities map[
 			child := Bitstring{}
 			for x := 0; x < strLen; x++ {
 				filteredPossibilities := genA.ACOFilter(child, possibilities, cities)
-				choice := genA.RouletteChoice(filteredPossibilities, cities)
-				child = append(child, filteredPossibilities[choice].Sequence[x])
+				if len(filteredPossibilities) == 0 {
+					child = genA.ACOPolyfill(child, cities)
+				} else {
+					choice := genA.RouletteChoice(filteredPossibilities, cities)
+					child = append(child, filteredPossibilities[choice].Sequence[x])
+				}
 			}
 			ch <- child
 		}()
@@ -220,6 +219,5 @@ func (genA *GeneticAlgorithm) ACOSelection(candidatePool Population, cities map[
 	for i := 0; i < numChildren; i++ {
 		offspring = append(offspring, Genome{<-ch})
 	}
-
 	return offspring
 }

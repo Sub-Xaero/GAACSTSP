@@ -3,6 +3,7 @@ package ga
 import (
 	"fmt"
 	"errors"
+	"strconv"
 )
 
 // Defines the storage data type that chromosomes will be encoded as
@@ -63,4 +64,27 @@ func (b Bitstring) String() string {
 		output += fmt.Sprintf("%2v", val) + " "
 	}
 	return "[" + output + "]"
+}
+
+// Override of the standard String() method to be able to output the contents of a bitstring in a more custom and readable format
+func (b Bitstring) Valid() bool {
+	keys := make(map[string]int)
+	for i := 1; i < len(b); i++ {
+		keys[strconv.Itoa(i)] = 0
+	}
+	keys["-1"] = 0
+
+	for _, val := range b {
+		if count, ok := keys[val]; !ok || count != 0 {
+			return false
+		} else {
+			keys[val]++
+		}
+	}
+	for _, val := range keys {
+		if val == 0 || val > 1 {
+			return false
+		}
+	}
+	return true
 }

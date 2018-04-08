@@ -137,7 +137,7 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 
 		// Crossover
 		if crossover {
-			breedingGround = genA.Crossover(breedingGround)
+				breedingGround = genA.PartiallyMappedCrossover(genA.Candidates)
 			bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
 			genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)
 			genA.Summarise("Crossover Offspring    :", breedingGround, cities)

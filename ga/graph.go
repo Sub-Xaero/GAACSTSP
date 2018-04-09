@@ -57,7 +57,7 @@ func DrawGraph(name string, MaxFitnesses, AverageFitnesses []float64) {
 		},
 	}
 	graph.Elements = []chart.Renderable{
-		chart.Legend(&graph),
+		chart.LegendThin(&graph),
 	}
 
 	file, err := os.OpenFile("graphs/"+name+".png", os.O_CREATE, 777)

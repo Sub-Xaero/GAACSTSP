@@ -85,6 +85,26 @@ func main() {
 		terminatePercentage = float64(*terminatePercentagePtr) / 100.0
 	)
 	ga.Run(cities, populationSize, strLength, generations, crossover, mutate, terminateEarly, terminatePercentage, selectionMethod, crossoverMethod, mutateMethod)
+
+	name := ""
+	name += strconv.Itoa(populationSize) + " Candidates"
+	name += ", " + strconv.Itoa(generations) + " Gens"
+	name += ", " + strconv.Itoa(len(cities)) + " Cities "
+	name += ", " + selectionMethod + " Selection"
+
+	if crossover {
+		name += ", " + crossoverMethod + " Crossover"
+	}
+
+	if mutate {
+		name += ", Inversion mutation,"
+	}
+
+	if terminateEarly {
+		name += ", Terminate at " + strconv.Itoa(int(terminatePercentage)) + "% stagnation"
+	}
+
+	DrawGraph(name, ga.MaxFitnessHistory, ga.AverageFitnessHistory)
 	if len(optimal.Sequence) != 0 {
 		fmt.Println("Optimal              :", strconv.FormatFloat(math.Abs(ga.Fitness(optimal, cities)), 'f', 2, 64))
 	}

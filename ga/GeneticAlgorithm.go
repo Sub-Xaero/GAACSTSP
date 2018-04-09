@@ -22,6 +22,9 @@ type GeneticAlgorithm struct {
 	BestCandidate Genome
 	Generations   int
 
+	MaxFitnessHistory     []float64
+	AverageFitnessHistory []float64
+
 	IterationsSinceChange int
 
 	Output       func(a ...interface{})
@@ -49,6 +52,12 @@ func (genA *GeneticAlgorithm) UpdateBestCandidate(bestOfGeneration Genome, citie
 		genA.BestCandidate = bestOfGeneration.Copy()
 		genA.IterationsSinceChange = 0
 	}
+}
+
+// Keep track of the average and max fitness for a generation in the history
+func (genA *GeneticAlgorithm) UpdateHistory(maxFitness, averageFitness float64) {
+	genA.AverageFitnessHistory = append(genA.AverageFitnessHistory, averageFitness)
+	genA.MaxFitnessHistory = append(genA.MaxFitnessHistory, maxFitness)
 }
 
 // Wrapper around GenerateCandidate(), creates a population of size "populationSize", where each candidate is of length
@@ -180,6 +189,7 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City,
 		genA.Output()
 		genA.Output()
 
+		genA.UpdateHistory(math.Abs(genA.MaxFitness(genA.Candidates, cities)), math.Abs(genA.AverageFitness(genA.Candidates, cities)))
 		if terminateEarly && float64(genA.IterationsSinceChange) > float64(generations)*terminatePercentage {
 			genA.Output("Termination : Stagnating change")
 			break

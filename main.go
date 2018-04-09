@@ -20,7 +20,7 @@ func main() {
 		mutateMethodPtr        = flag.String("mutateMethod", "inversion", "mutation method to use, one of 'inversion' or 'swap' ")
 		numGenerationsPtr      = flag.Int("generations", 50, "the number of generations to run for")
 		sizePtr                = flag.Int("size", 50, "the number of candidates to have in the pool")
-		crossoverPtr           = flag.Bool("crossover", false, "whether or not the algorithm should use crossover operators (default true)")
+		crossoverPtr           = flag.Bool("crossover", false, "whether or not the algorithm should use crossover operators (default false)")
 		mutatePtr              = flag.Bool("mutate", false, "whether or not the algorithm should use mutation operators (default false)")
 		terminateEarlyPtr      = flag.Bool("terminateEarly", false, "whether or not the algorithm should terminate early if stagnation is detected (default false)")
 		terminatePercentagePtr = flag.Int("terminatePercentage", 25, "percentage of the specified no. of generations, should the algorithm terminate if change has not been detected in that time")
@@ -97,7 +97,7 @@ func main() {
 	}
 
 	if mutate {
-		name += ", Inversion mutation,"
+		name += ", " + mutateMethod + " Mutation,"
 	}
 
 	if terminateEarly {

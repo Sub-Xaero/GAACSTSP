@@ -155,10 +155,13 @@ func (genA *GeneticAlgorithm) ACOFilter(genePartial Bitstring, candidatePool Pop
 	return filteredOffspring
 }
 
+// If no parents can provide a viable next-step, identify an as-yet unvisited city at random.
 func (genA *GeneticAlgorithm) ACOPolyfill(genePartial Bitstring, cities map[string]City) Bitstring {
 	output := genePartial.Copy()
 	numCities := len(cities)
 	lenPartial := len(output)
+	possibilities := make([]string, 0)
+
 	if lenPartial > numCities {
 		panic("Trying to polyfill string past tour length")
 	} else if lenPartial == numCities {
@@ -168,21 +171,20 @@ func (genA *GeneticAlgorithm) ACOPolyfill(genePartial Bitstring, cities map[stri
 		for i := 1; i <= numCities; i++ {
 			count[strconv.Itoa(i)] = 0
 		}
-
 		for _, val := range output {
 			count[val]++
 		}
-
 		for key, val := range count {
 			if val > 1 {
 				panic("Duplicate key, should not exist")
 			}
 			if val == 0 {
-				output = append(output, key)
-				break
+				possibilities = append(possibilities, key)
 			}
 		}
 	}
+	choice := genA.RandomEngine.Intn(len(possibilities))
+	output = append(output, possibilities[choice])
 	return output
 }
 

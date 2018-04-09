@@ -14,15 +14,16 @@ import (
 func main() {
 	var (
 		inputFileNamePtr       = flag.String("input", "data/berlin52.tsp", "the path to a TSPLib input file \".tsp\" containing cities to find a solution for")
-		optimalRoutePtr        = flag.String("optimal", "", "the path to a TSPLib optimal route file \".opt.tour\" containing an optimal solution to compare against")
-		selectionMethodPtr     = flag.String("selectionMethod", "aco", "(default: aco) selection method to use, one of 'aco', 'tournament', 'roulette'")
-		crossoverMethodPtr     = flag.String("xoMethod", "ox", "(default: ox) crossover method to use, one of 'ox' (ordered), 'pmx' (partially-mapped)")
-		numGenerationsPtr      = flag.Int("generations", 500, "the number of generations to run for")
+		optimalRoutePtr        = flag.String("optimal", "", "the path to a TSPLib optimal route file \".opt.tour\" containing an optimal solution to compare against (default: automatically determined from input file) ")
+		selectionMethodPtr     = flag.String("selectionMethod", "aco", "selection method to use, one of 'aco', 'tournament', 'roulette'")
+		crossoverMethodPtr     = flag.String("xoMethod", "ox", "crossover method to use, one of 'ox' (ordered), 'pmx' (partially-mapped) ")
+		mutateMethodPtr        = flag.String("mutateMethod", "inversion", "mutation method to use, one of 'inversion' or 'swap' ")
+		numGenerationsPtr      = flag.Int("generations", 50, "the number of generations to run for")
 		sizePtr                = flag.Int("size", 50, "the number of candidates to have in the pool")
-		crossoverPtr           = flag.Bool("crossover", true, "(default: false) whether or not the algorithm should use crossover operators")
-		mutatePtr              = flag.Bool("mutate", true, "(default: false) whether or not the algorithm should use mutation operators")
-		terminateEarlyPtr      = flag.Bool("terminateEarly", false, "(default: false) whether or not the algorithm should terminate early if stagnation is detected")
-		terminatePercentagePtr = flag.Int("terminatePercentage", 25, "percentage of the specified no. of generations (default 500), should the algorithm terminate if change has not been detected in that time")
+		crossoverPtr           = flag.Bool("crossover", false, "whether or not the algorithm should use crossover operators (default true)")
+		mutatePtr              = flag.Bool("mutate", false, "whether or not the algorithm should use mutation operators (default false)")
+		terminateEarlyPtr      = flag.Bool("terminateEarly", false, "whether or not the algorithm should terminate early if stagnation is detected (default false)")
+		terminatePercentagePtr = flag.Int("terminatePercentage", 25, "percentage of the specified no. of generations, should the algorithm terminate if change has not been detected in that time")
 	)
 	flag.Parse()
 
@@ -49,7 +50,7 @@ func main() {
 		selectionMethod = strings.ToLower(*selectionMethodPtr)
 
 	default:
-		log.Fatal("method flag specified but was not a recognised value. Please use -h for help")
+		log.Fatal("selectionMethod flag specified but was not a recognised value. Please use -h for help")
 	}
 
 	var crossoverMethod string
@@ -60,7 +61,18 @@ func main() {
 		crossoverMethod = strings.ToLower(*crossoverMethodPtr)
 
 	default:
-		log.Fatal("xomethod flag specified but was not a recognised value. Please use -h for help")
+		log.Fatal("xoMethod flag specified but was not a recognised value. Please use -h for help")
+	}
+
+	var mutateMethod string
+	switch strings.ToLower(*mutateMethodPtr) {
+	case "inversion":
+		fallthrough
+	case "swap":
+		mutateMethod = strings.ToLower(*mutateMethodPtr)
+
+	default:
+		log.Fatal("mutateMethod flag specified but was not a recognised value. Please use -h for help")
 	}
 
 	var (
@@ -72,7 +84,7 @@ func main() {
 		terminateEarly      = *terminateEarlyPtr
 		terminatePercentage = float64(*terminatePercentagePtr) / 100.0
 	)
-	ga.Run(cities, populationSize, strLength, generations, crossover, mutate, terminateEarly, terminatePercentage, selectionMethod, crossoverMethod)
+	ga.Run(cities, populationSize, strLength, generations, crossover, mutate, terminateEarly, terminatePercentage, selectionMethod, crossoverMethod, mutateMethod)
 	if len(optimal.Sequence) != 0 {
 		fmt.Println("Optimal              :", strconv.FormatFloat(math.Abs(ga.Fitness(optimal, cities)), 'f', 2, 64))
 	}

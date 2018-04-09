@@ -95,7 +95,12 @@ func (genA *GeneticAlgorithm) Summarise(title string, candidatePool Population, 
 // Selection, Crossover and Mutation, as determined by the boolean flag parameters crossover and mutate.
 // terminateEarly if set to true, will attempt to detect stagnation of improvement. If 25% of generations have passed
 // and no improvement has been made, algorithm will terminate early and return the best thus far.
-func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstringLength, generations int, crossover, mutate, terminateEarly bool, terminatePercentage float64, selectionMethod, crossoverMethod string) error {
+func (genA *GeneticAlgorithm) Run(cities map[string]City,
+	populationSize, bitstringLength, generations int,
+	crossover, mutate, terminateEarly bool,
+	terminatePercentage float64,
+	selectionMethod, crossoverMethod, mutateMethod string) error {
+
 	if genA.Output == nil {
 		return errors.New("output func is nil")
 	}
@@ -154,7 +159,14 @@ func (genA *GeneticAlgorithm) Run(cities map[string]City, populationSize, bitstr
 		// Mutation
 		if mutate {
 			for index := range breedingGround {
-				breedingGround[index] = genA.InversionMutate(breedingGround[index])
+				switch mutateMethod {
+				case "inversion":
+					breedingGround[index] = genA.InversionMutate(breedingGround[index])
+				case "swap":
+					breedingGround[index] = genA.SwapMutate(breedingGround[index])
+				default:
+					log.Fatal("mutateMethod not a recognised value")
+				}
 			}
 			bestCandidateOfGeneration = genA.MaxFitnessCandidate(genA.Candidates, cities)
 			genA.UpdateBestCandidate(bestCandidateOfGeneration, cities)

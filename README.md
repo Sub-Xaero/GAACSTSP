@@ -23,23 +23,25 @@ http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/
 The executable can be invoked with the following command-line flags
 ```
   -crossover
-        whether or not the algorithm should use crossover operators (default true)
+        whether or not the algorithm should use crossover operators (default false)
   -generations int
-        the number of generations to run for (default 500)
+        the number of generations to run for (default 50)
   -input string
         the path to a TSPLib input file ".tsp" containing cities to find a solution for (default "data/berlin52.tsp")
-  -length int
-        the length of a candidate solution. Must be equal to the number of cities + 1 (default 53)
-  -method string
-        Selection method to use, one of 'ACO', 'Tournament', 'Roulette' (default "ACO")
   -mutate
-        whether or not the algorithm should use mutation operators (default true)
+        whether or not the algorithm should use mutation operators (default false)
+  -mutateMethod string
+        mutation method to use, one of 'inversion' or 'swap'  (default "inversion")
   -optimal string
-        the path to a TSPLib optimal route file ".opt.tour" containing an optimal solution to compare against
+        the path to a TSPLib optimal route file ".opt.tour" containing an optimal solution to compare against (default: automatically determined from input file)
+  -selectionMethod string
+        selection method to use, one of 'aco', 'tournament', 'roulette' (default "aco")
   -size int
         the number of candidates to have in the pool (default 50)
   -terminateEarly
-        whether or not the algorithm should terminate early if stagnation is detected
+        whether or not the algorithm should terminate early if stagnation is detected (default false)
   -terminatePercentage int
-        percentage of the specified no. of generations (default 500), should the algorithm terminate if change has not been detected in that time (default 25)
+        percentage of the specified no. of generations, should the algorithm terminate if change has not been detected in that time (default 25)
+  -xoMethod string
+        crossover method to use, one of 'ox' (ordered), 'pmx' (partially-mapped)  (default "ox")
 ```

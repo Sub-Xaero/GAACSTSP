@@ -86,10 +86,12 @@ func main() {
 	)
 	ga.Run(cities, populationSize, strLength, generations, crossover, mutate, terminateEarly, terminatePercentage, selectionMethod, crossoverMethod, mutateMethod)
 
-	name := ""
+	strippedName := strings.Replace(*inputFileNamePtr, ".tsp", "", -1)
+	strippedName = strings.Replace(strippedName, "data/", "", -1)
+	name :=  strippedName + ", "
 	name += strconv.Itoa(populationSize) + " Candidates"
 	name += ", " + strconv.Itoa(generations) + " Gens"
-	name += ", " + strconv.Itoa(len(cities)) + " Cities "
+	name += ", " + strconv.Itoa(len(cities)) + " Cities"
 	name += ", " + selectionMethod + " Selection"
 
 	if crossover {
@@ -97,7 +99,7 @@ func main() {
 	}
 
 	if mutate {
-		name += ", " + mutateMethod + " Mutation,"
+		name += ", " + mutateMethod + " Mutation"
 	}
 
 	if terminateEarly {
